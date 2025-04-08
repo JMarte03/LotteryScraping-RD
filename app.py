@@ -3,13 +3,13 @@ from flask import Flask,jsonify, Response, request
 from flask_cors import CORS, cross_origin
 import re
 import urllib.request
+import requests
 from bs4 import BeautifulSoup
 from xml.etree import ElementTree as ET
 import os
 import json
 
-
-def load_html(search_date=None):
+""" def load_html(search_date=None):
 
 	url1 = "https://www.conectate.com.do/loterias/"
 
@@ -32,6 +32,36 @@ def load_html(search_date=None):
 		return []
 
 	return games_blocks
+ """
+def load_html(search_date=None):
+    url1 = "https://www.conectate.com.do/loterias/"
+    if search_date:
+        url1 += f"?date={search_date}"
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+    }
+
+    try:
+        print(f"[DEBUG] Requesting URL: {url1}")
+        response = requests.get(url1, headers=headers)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        # Debug: print part of the raw HTML to see what was fetched
+        print("[DEBUG] Sample of HTML content fetched:")
+        print(soup.prettify()[:1500])  # print only the first 1500 chars to avoid terminal overload
+
+        blocks = soup.find_all("div", class_="game-block")
+        print(f"[DEBUG] Found {len(blocks)} game-blocks")
+
+        return blocks
+
+    except Exception as e:
+        print(f"[ERROR] Failed to load or parse HTML: {e}")
+        return []
+
 
 def load_html_name(search_name,search_date=None):
 	url1 = f"https://loteriasdominicanas.com/{search_name}"
