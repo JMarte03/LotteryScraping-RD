@@ -11,32 +11,23 @@ import json
 
 def load_html(search_date=None):
 
-	url1 = "https://loteriasdominicanas.com/"
-	# esta Segunda Url es porque en la Pag. principal no aparecen las Loterias Anguila
-	url2 = "https://loteriasdominicanas.com/anguila" 
+	url1 = "https://www.conectate.com.do/loterias/"
 
 	# Agregar el parámetro date a la URL si existe
 	if search_date:
 		url1 += f"?date={search_date}"
-		url2 += f"?date={search_date}"
         
 	# Crea una lista para almacenar los elementos de ambos soups
 	games_blocks = []
 
 	try:
 		html1 = urllib.request.urlopen(url1).read()
-		html2 = urllib.request.urlopen(url2).read()
                 
 		soup1 = BeautifulSoup(html1, "html.parser")
-		soup2 = BeautifulSoup(html2, "html.parser")
                 
 		# Encuentra los elementos deseados del soup y agrégalos a la lista
 		blocks1 = soup1.find_all("div", class_="game-block")
 		games_blocks.extend(blocks1)
-
-		# Encuentra los elementos del soup y agrégalos a la lista
-		blocks2 = soup2.find_all("div", class_="game-block")
-		games_blocks.extend(blocks2)
 	except:
 		return []
 
@@ -74,7 +65,7 @@ def scraping(search_date=None, search_lotery=None):
 		data = json.loads(json_data)
 
 	if search_lotery:
-		data = [item for item in data if  search_lotery.lower() in item["name"].lower()]
+		data = [item for item in data if  search_lotery.lower() in item["game"].lower()]
 	
 	if len(data) == 0:
 		return data
@@ -86,7 +77,7 @@ def scraping(search_date=None, search_lotery=None):
 		block = {}
 		title = game_block.find("a", "game-title").getText().strip().lower()
 		 
-		filtered_data = [item for item in data if item["name"].lower() == title]
+		filtered_data = [item for item in data if item["game"].lower() == title]
 		if len(filtered_data) == 0:
 			continue  
 
@@ -95,7 +86,7 @@ def scraping(search_date=None, search_lotery=None):
 		score = "-".join(span.text.strip() for span in pather_score)
 
 		block['id'] = filtered_data[0]["id"]
-		block['name'] = filtered_data[0]["name"]
+		block['game'] = filtered_data[0]["game"]
 		block['date'] = pather_date
 		block['number'] = score
 		loteries_parser.append(block)
@@ -112,7 +103,7 @@ def scrapingByName(search_name,search_date=None, search_lotery=None):
 
 	
 	if search_lotery:
-		data = [item for item in data if  search_lotery.lower() in item["name"].lower()]
+		data = [item for item in data if  search_lotery.lower() in item["game"].lower()]
 	
 	if len(data) == 0:
 		return data
@@ -124,7 +115,7 @@ def scrapingByName(search_name,search_date=None, search_lotery=None):
 		block = {}
 		title = game_block.find("a", "game-title").getText().strip().lower()
 
-		filtered_data = [item for item in data if item["name"].lower() == title]
+		filtered_data = [item for item in data if item["game"].lower() == title]
 		if len(filtered_data) == 0:
 			continue  
 
@@ -133,7 +124,7 @@ def scrapingByName(search_name,search_date=None, search_lotery=None):
 		score = "-".join(span.text.strip() for span in pather_score)
 
 		block['id'] = filtered_data[0]["id"]
-		block['name'] = filtered_data[0]["name"]
+		block['game'] = filtered_data[0]["game"]
 		block['date'] = pather_date
 		block['number'] = score
 		loteries_parser.append(block)
@@ -154,13 +145,13 @@ def search_lotery():
 	data = scraping(search_date)
 	return JsonUFT8(data)
 	 
-@app.route("/search", methods=['GET'])
+""" @app.route("/search", methods=['GET'])
 def search_lotery_by_name():
-	search_query = request.args.get('name', None)
+	search_query = request.args.get('game', None)
 	search_date = request.args.get('date', datetime.datetime.now().strftime("%d-%m-%Y"))
 
 	if not search_query:
-		return jsonify({"error": "Missing 'name' parameter"}), 400
+		return jsonify({"error": "Missing 'game' parameter"}), 400
 	
 	data =  scraping(search_date, search_query) 
 	return JsonUFT8(data)
@@ -172,10 +163,9 @@ def search_lotery1():
 	data = scrapingByName("loteria-nacional/gana-mas",search_date,"Gana Más")
 	return JsonUFT8(data)
 
-
 @app.route("/loteria-primera", methods=['GET'])
 def search_lotery2():
-	search_query = request.args.get('name', "primera")
+	search_query = request.args.get('game', "primera")
 	search_date = request.args.get('date', datetime.datetime.now().strftime("%d-%m-%Y"))
 	
 	data = scrapingByName("la-primera",search_date, search_query) 
@@ -187,7 +177,6 @@ def search_lotery3():
 	
 	data = scrapingByName("la-primera/quiniela-medio-dia",search_date, "la primera Día")
 	return JsonUFT8(data)
-
 
 @app.route("/loteria-primera-noche", methods=['GET'])
 def search_lotery4():
@@ -204,7 +193,6 @@ def search_lotery6():
 	data = scrapingByName("la-suerte-dominicana",search_date, search_query)
 	return JsonUFT8(data)
 
-
 @app.route("/loteria-la-suerte-12am", methods=['GET'])
 def search_lotery7():
 	search_date = request.args.get('date', datetime.datetime.now().strftime("%d-%m-%Y"))
@@ -219,14 +207,12 @@ def search_lotery8():
 	data = scrapingByName("la-suerte-dominicana/quiniela-tarde",search_date, "La Suerte 18:00")
 	return JsonUFT8(data)
 
-
 @app.route("/loteria-lotedom", methods=['GET'])
 def search_lotery9():
 	search_date = request.args.get('date', datetime.datetime.now().strftime("%d-%m-%Y"))
 	
 	data = scrapingByName("lotedom",search_date, "Quiniela LoteDom")
 	return JsonUFT8(data)
-
 
 @app.route("/loteria-anguila", methods=['GET'])
 def search_lotery10():
@@ -279,7 +265,6 @@ def search_lotery12():
 	data = scrapingByName("loteria-nacional/quiniela",search_date, "Lotería Nacional")
 	return JsonUFT8(data)
 
-
 @app.route("/loteria-leidsa", methods=['GET'])
 def search_lotery13():
 	search_date = request.args.get('date', datetime.datetime.now().strftime("%d-%m-%Y"))
@@ -294,14 +279,12 @@ def search_lotery14():
 	data = scrapingByName("loto-real", search_date, "Quiniela Real")
 	return JsonUFT8(data)
 
-
 @app.route("/loteria-loteka", methods=['GET'])
 def search_lotery15():
 	search_date = request.args.get('date', datetime.datetime.now().strftime("%d-%m-%Y"))
 	
 	data = scrapingByName("loteka", search_date, "Quiniela Loteka")
 	return JsonUFT8(data)
-
 
 @app.route("/loteria-americana", methods=['GET'])
 def search_lotery16():
@@ -338,5 +321,5 @@ def search_lotery20():
 	
 	data = scrapingByName("americanas/new-york-noche",search_date, "New York Noche")
 	return JsonUFT8(data)
-
+ """
 app.run(host='0.0.0.0', port=port)

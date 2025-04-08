@@ -1,74 +1,162 @@
 [
     {
         "id": 1,
-        "name": "La Primera Día"
+        "game": "Juega Más Pega Más",
+        "lottery": "Nacional"
     },
     {
         "id": 2,
-        "name": "Anguila Mañana"
+        "game": "Gana Más",
+        "lottery": "Nacional"
     },
     {
         "id": 3,
-        "name": "La Suerte 12:30"
+        "game": "Lotería Nacional",
+        "lottery": "Nacional"
     },
     {
         "id": 4,
-        "name": "Anguila Medio Día"
+        "game": "Pega 3 Más",
+        "lottery": "Leidsa"
     },
     {
         "id": 5,
-        "name": "Quiniela Real"
+        "game": "Loto Pool",
+        "lottery": "Leidsa"
     },
     {
         "id": 6,
-        "name": "Florida Día"
+        "game": "Super Kino TV",
+        "lottery": "Leidsa"
     },
     {
         "id": 7,
-        "name": "Quiniela LoteDom"
+        "game": "Quiniela Leidsa",
+        "lottery": "Leidsa"
     },
     {
         "id": 8,
-        "name": "New York Tarde"
+        "game": "Loto - Loto Más",
+        "lottery": "Leidsa"
     },
     {
         "id": 9,
-        "name": "Gana Más"
+        "game": "Quiniela Real",
+        "lottery": "Real"
     },
     {
         "id": 10,
-        "name": "La Suerte 18:00"
+        "game": "Loto Pool",
+        "lottery": "Real"
     },
     {
         "id": 11,
-        "name": "Anguila Tarde"
+        "game": "Loto Real",
+        "lottery": "Real"
     },
     {
         "id": 12,
-        "name": "Quiniela Loteka"
+        "game": "Quiniela Loteka",
+        "lottery": "Loteka"
     },
     {
         "id": 13,
-        "name": "Lotería Nacional"
+        "game": "Mega Chances",
+        "lottery": "Loteka"
     },
     {
         "id": 14,
-        "name": "Anguila Noche"
+        "game": "New York 3:30",
+        "lottery": "Americanas"
     },
     {
         "id": 15,
-        "name": "Quiniela Leidsa"
+        "game": "New York 11:30",
+        "lottery": "Americanas"
     },
     {
         "id": 16,
-        "name": "Primera Noche"
-    },   
+        "game": "Florida Día",
+        "lottery": "Americanas"
+    },
     {
         "id": 17,
-        "name": "Florida Noche"
+        "game": "Florida Noche",
+        "lottery": "Americanas"
     },
     {
         "id": 18,
-        "name": "New York Noche"
+        "game": "Mega Millions",
+        "lottery": "Americanas"
+    },
+    {
+        "id": 19,
+        "game": "PowerBall",
+        "lottery": "Americanas"
+    },
+    {
+        "id": 20,
+        "game": "La Primera Día",
+        "lottery": "Primera"
+    },
+    {
+        "id": 21,
+        "game": "Primera Noche",
+        "lottery": "Primera"
+    },
+    {
+        "id": 22,
+        "game": "Loto 5",
+        "lottery": "Primera"
+    },
+    {
+        "id": 23,
+        "game": "La Suerte MD",
+        "lottery": "La Suerte"
+    },
+    {
+        "id": 24,
+        "game": "La Suerte 6PM",
+        "lottery": "La Suerte"
+    },
+    {
+        "id": 25,
+        "game": "Quiniela",
+        "lottery": "LoteDom"
+    },
+    {
+        "id": 26,
+        "game": "El Quemaito Mayor",
+        "lottery": "LoteDom"
+    },
+    {
+        "id": 27,
+        "game": "King Lottery 12:30",
+        "lottery": "King Lottery"
+    },
+    {
+        "id": 28,
+        "game": "King Lottery 7:30",
+        "lottery": "King Lottery"
+    },
+    {
+        "id": 29,
+        "game": "Anguila 10:00 AM",
+        "lottery": "Anguila"
+    },
+    {
+        "id": 30,
+        "game": "Anguila 1:00 PM",
+        "lottery": "Anguila"
+    },
+    {
+        "id": 31,
+        "game": "Anguila 6:00 PM",
+        "lottery": "Anguila"
+    },
+    {
+        "id": 32,
+        "game": "Anguila 9:00 PM",
+        "lottery": "Anguila"
     }
 ]
