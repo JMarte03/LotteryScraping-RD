@@ -56,7 +56,7 @@ def load_html_name(search_name,search_date=None):
 
 	return games_blocks
 
-def scraping(search_date=None, search_lotery=None):
+""" def scraping(search_date=None, search_lotery=None):
 	data = []
 	loteries_parser = []
   # Cargar JSON en un Archivo
@@ -92,8 +92,82 @@ def scraping(search_date=None, search_lotery=None):
 		loteries_parser.append(block)
 
 	return sorted(loteries_parser, key=lambda k:k["id"])
+ """
 
-def scrapingByName(search_name,search_date=None, search_lotery=None):
+def scraping(search_date=None, search_lotery=None):
+    data = []
+    loteries_parser = []
+
+    # Load JSON
+    with open('lottery.json', 'r', encoding='utf-8') as file:
+        json_data = file.read()
+        data = json.loads(json_data)
+
+    if search_lotery:
+        data = [item for item in data if search_lotery.lower() in item["game"].lower()]
+    
+    if len(data) == 0:
+        return data
+
+    # Load HTML
+    games_blocks = load_html(search_date)
+
+    # Create a mapping of company-block number to company name
+    company_map = {}
+    for block in games_blocks:
+        classes = block.get("class", [])
+        for cls in classes:
+            if cls.startswith("company-block-"):
+                company_number = cls.split("-")[-1]
+                company_map[company_number] = None  # we'll map name later if needed
+
+    for game_block in games_blocks:
+        block = {}
+
+        # Title of game
+        title_elem = game_block.find("a", class_="game-title")
+        if not title_elem:
+            continue
+        title = title_elem.getText().strip()
+
+        # Find the company-block-NN class
+        classes = game_block.get("class", [])
+        company_class = next((cls for cls in classes if cls.startswith("company-block-")), None)
+        if not company_class:
+            continue
+
+        company_number = company_class.split("-")[-1]
+
+        # Get all JSON games with this company
+        games_for_company = [
+            item for item in data 
+            if item["game"].lower() == title.lower()
+        ]
+
+        if not games_for_company:
+            continue
+        
+        game_data = games_for_company[0]
+
+        # Scores and date
+        pather_score = game_block.find_all("span", class_="score")
+        pather_date = game_block.find("div", class_="session-date")
+        if not pather_date:
+            continue
+
+        score = "-".join(span.text.strip() for span in pather_score)
+        date_text = pather_date.getText().strip()
+
+        block['id'] = game_data["id"]
+        block['game'] = game_data["game"]
+        block['date'] = date_text
+        block['number'] = score
+
+        loteries_parser.append(block)
+
+    return sorted(loteries_parser, key=lambda k: k["id"])
+
+""" def scrapingByName(search_name,search_date=None, search_lotery=None):
 	data = []
 	loteries_parser = []
   # Cargar JSON en un Archivo
@@ -130,6 +204,71 @@ def scrapingByName(search_name,search_date=None, search_lotery=None):
 		loteries_parser.append(block)
 
 	return sorted(loteries_parser, key=lambda k:k["id"])
+ """
+
+def scrapingByName(search_name, search_date=None, search_lotery=None):
+    data = []
+    loteries_parser = []
+
+    # Load JSON
+    with open('lottery.json', 'r', encoding='utf-8') as file:
+        json_data = file.read()
+        data = json.loads(json_data)
+
+    if search_lotery:
+        data = [item for item in data if search_lotery.lower() in item["game"].lower()]
+
+    if len(data) == 0:
+        return data
+
+    # Load HTML
+    games_blocks = load_html_name(search_name, search_date)
+
+    for game_block in games_blocks:
+        block = {}
+
+        # Extract title
+        title_elem = game_block.find("a", class_="game-title")
+        if not title_elem:
+            continue
+        title = title_elem.getText().strip()
+
+        # Extract company-block-NN class
+        classes = game_block.get("class", [])
+        company_class = next((cls for cls in classes if cls.startswith("company-block-")), None)
+        if not company_class:
+            continue
+
+        # Extract company-block number
+        company_number = company_class.split("-")[-1]
+
+        # Find all JSON entries that match the game title
+        matching_entries = [
+            item for item in data if item["game"].lower() == title.lower()
+        ]
+        if not matching_entries:
+            continue
+
+        game_data = matching_entries[0]
+
+        # Extract scores and date
+        pather_score = game_block.find_all("span", class_="score")
+        pather_date = game_block.find("div", class_="session-date")
+        if not pather_date:
+            continue
+
+        score = "-".join(span.text.strip() for span in pather_score)
+        date_text = pather_date.getText().strip()
+
+        block['id'] = game_data["id"]
+        block['game'] = game_data["game"]
+        block['date'] = date_text
+        block['number'] = score
+
+        loteries_parser.append(block)
+
+    return sorted(loteries_parser, key=lambda k: k["id"])
+
 
 def JsonUFT8(data=None):
 	json_string = json.dumps(data,ensure_ascii = False)
@@ -144,6 +283,8 @@ def search_lotery():
 	search_date = request.args.get('date', datetime.datetime.now().strftime("%d-%m-%Y"))
 	data = scraping(search_date)
 	return JsonUFT8(data)
+
+app.run(host='0.0.0.0', port=port)
 	 
 """ @app.route("/search", methods=['GET'])
 def search_lotery_by_name():
@@ -322,4 +463,3 @@ def search_lotery20():
 	data = scrapingByName("americanas/new-york-noche",search_date, "New York Noche")
 	return JsonUFT8(data)
  """
-app.run(host='0.0.0.0', port=port)
