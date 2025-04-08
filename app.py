@@ -36,7 +36,7 @@ def load_html(search_date=None):
         print(f"[ERROR] Failed to load or parse HTML: {e}")
         return []
 
-def scraping(search_date=None, search_lotery=None):
+""" def scraping(search_date=None, search_lotery=None):
 	data = []
 	loteries_parser = []
   # Cargar JSON en un Archivo
@@ -72,7 +72,73 @@ def scraping(search_date=None, search_lotery=None):
 		block['lottery'] = filtered_data[0]["lottery"]
 		loteries_parser.append(block)
 
-	return sorted(loteries_parser, key=lambda k:k["id"])
+	return sorted(loteries_parser, key=lambda k:k["id"]) """
+
+def scraping(search_date=None, search_lotery=None):
+    # Load games (lottery.json)
+    with open('lottery.json', 'r', encoding='utf-8') as f:
+        games_data = json.load(f)
+
+    # Load companies (companies.json)
+    with open('companies.json', 'r', encoding='utf-8') as f:
+        companies_data = json.load(f)
+    
+    # Create company_id -> name lookup
+    company_lookup = {item["id"]: item["name"] for item in companies_data}
+
+    # Optionally filter games by search term
+    if search_lotery:
+        games_data = [item for item in games_data if search_lotery.lower() in item["game"].lower()]
+
+    if not games_data:
+        return []
+
+    game_blocks = load_html(search_date)
+    loteries_parser = []
+
+    for game_block in game_blocks:
+        block = {}
+        title = game_block.find("a", "game-title")
+        if not title:
+            continue
+        title = title.getText().strip().lower()
+
+        # Extract the company-block-XX class
+        company_class = next((cls for cls in game_block.get("class", []) if cls.startswith("company-block-")), None)
+        if not company_class:
+            continue
+        company_id = company_class.split("-")[-1]
+
+        company_name = company_lookup.get(company_id)
+        if not company_name:
+            continue
+
+        # Match game using name AND company_id
+        matched_game = next(
+            (item for item in games_data if item["game"].lower() == title and item.get("company_id") == company_id),
+            None
+        )
+        if not matched_game:
+            continue
+
+        # Extract score and date
+        scores = game_block.find_all("span", "score")
+        score = "-".join(span.text.strip() for span in scores)
+
+        date_span = game_block.find("span", "session-date")
+        if not date_span:
+            continue
+        date_text = date_span.getText().strip()
+
+        # Build response block
+        block["id"] = matched_game["id"]
+        block["game"] = matched_game["game"]
+        block["date"] = date_text
+        block["number"] = score
+        block["lottery"] = company_name
+        loteries_parser.append(block)
+
+    return sorted(loteries_parser, key=lambda k: k["id"])
 
 def JsonUFT8(data=None):
 	json_string = json.dumps(data,ensure_ascii = False)
