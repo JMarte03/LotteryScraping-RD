@@ -36,44 +36,6 @@ def load_html(search_date=None):
         print(f"[ERROR] Failed to load or parse HTML: {e}")
         return []
 
-""" def scraping(search_date=None, search_lotery=None):
-	data = []
-	loteries_parser = []
-  # Cargar JSON en un Archivo
-	with open('lottery.json', 'r', encoding='utf-8') as file:
-		json_data = file.read()
-		data = json.loads(json_data)
-
-	if search_lotery:
-		data = [item for item in data if  search_lotery.lower() in item["game"].lower()]
-	
-	if len(data) == 0:
-		return data
-
-	# Load HTML 
-	games_blocks = load_html(search_date)
-
-	for game_block in games_blocks:
-		block = {}
-		title = game_block.find("a", "game-title").getText().strip().lower()
-		 
-		filtered_data = [item for item in data if item["game"].lower() == title]
-		if len(filtered_data) == 0:
-			continue  
-
-		pather_score = game_block.find_all("span", "score")
-		pather_date = game_block.find("span", "session-date").getText().strip()
-		score = "-".join(span.text.strip() for span in pather_score)
-
-		block['id'] = filtered_data[0]["id"]
-		block['game'] = filtered_data[0]["game"]
-		block['date'] = pather_date
-		block['number'] = score		
-		block['lottery'] = filtered_data[0]["lottery"]
-		loteries_parser.append(block)
-
-	return sorted(loteries_parser, key=lambda k:k["id"]) """
-
 def scraping(search_date=None, search_lotery=None):
     # Load games (lottery.json)
     with open('lottery.json', 'r', encoding='utf-8') as f:
