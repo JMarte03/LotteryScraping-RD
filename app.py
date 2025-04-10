@@ -92,12 +92,23 @@ def scraping(search_date=None, search_lotery=None):
             continue
         date_text = date_span.getText().strip()
 
+        # Extract game block image
+        image_tag = game_block.find("img", "lazy")
+        image_src = (
+            image_tag.get("src")
+            or image_tag.get("data-src")
+            or image_tag.get("data-original")
+            if image_tag
+            else None
+        )
+
         # Build response block
         block["id"] = matched_game["id"]
         block["game"] = matched_game["game"]
         block["date"] = date_text
         block["number"] = score
         block["lottery"] = company_name
+        block["image"] = image_src
         loteries_parser.append(block)
 
     return sorted(loteries_parser, key=lambda k: k["id"])
