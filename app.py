@@ -85,7 +85,9 @@ def scraping(search_date=None, search_lotery=None):
 
         # Extract score and date
         scores = game_block.find_all("span", "score")
-        score = "-".join(span.text.strip() for span in scores)
+        score = [span.text.strip() for span in scores]
+        # score = "-".join(span.text.strip() for span in scores)
+    
 
         date_span = game_block.find("span", "session-date")
         if not date_span:
